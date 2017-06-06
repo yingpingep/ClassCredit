@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 // Add by EP.
 using HtmlAgilityPack;
 using System.Net;
+using Project_ClassCredit.Service;
+using Project_ClassCredit.Modal;
 
 namespace Project_ClassCredit
 {
@@ -19,6 +21,7 @@ namespace Project_ClassCredit
             //       2. Using HtmlAgilityPack to parse data.
             //       3. Output.
 
+            string storePath = @"C:\Users\yinnping\Downloads\course.txt";
             string filePath = string.Empty;
 
             if (args.Length != 0)
@@ -32,6 +35,7 @@ namespace Project_ClassCredit
             // File open.
             StreamReader sr = new StreamReader(filePath);
             string retu = sr.ReadToEnd();
+            sr.Close();
 
             retu = WebUtility.HtmlDecode(retu);
             HtmlDocument htmlDoc = new HtmlDocument();
@@ -45,25 +49,86 @@ namespace Project_ClassCredit
             HtmlNode[] target = htmlDoc.DocumentNode.Descendants().Where(
                                 x => (x.Name == "tr")).ToArray();
 
+            Helper helper = new Helper();
 
+            StreamWriter sw = new StreamWriter(File.Create(storePath));
             for (int i = 1; i < target.Length; i++)
             {
-                GetCourse(target, i);
+                HtmlNode[] courseRow = helper.GetCourseRow(target, i);
+                Course course = helper.GetCourse(courseRow);
+                sw.WriteLine(course.ToString());
+                Console.WriteLine($"{i} done.");
             }
-                          
-                   
+            
+            sw.Close();
 
-            Console.ReadLine();
+            sr = new StreamReader(File.OpenRead(storePath));
+            List<Course> general = new List<Course>();
+            List<Course> csneed = new List<Course>();
+            List<Course> cschoose = new List<Course>();
+            List<Course> other = new List<Course>();
+            
+            char[] splitChar = { '\t' };
+            while (!sr.EndOfStream)
+            {
+                string[] data = sr.ReadLine().Split(splitChar);
+                Course course = new Course();
+                course.Semester = data[0];
+                course.Code = data[1];
+                course.Name = data[2];
+                course.Credit = int.Parse(data[3].Trim());
+                course.Grade = data[4];
+
+                char[] code = data[1].ToCharArray();
+                if (data[1].Contains("GE") || data[1].Contains("SA") || data[1].Contains("CC") || data[1].Contains("FE") || code[2] == 'G')
+                    general.Add(course);
+                else if (data[1].Contains("CS"))
+                {
+                    if (code[6] == '3' || code[6] == '0')
+                        csneed.Add(course);
+                    else
+                        cschoose.Add(course);
+                }
+                else
+                    other.Add(course);
+            }
+            sr.Close();
+
+            Console.WriteLine("=== 通識 共 {0} 學分 ===", Sum(general.ToArray()));
+            ShowUp(general.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 資工必修 共 {0} 學分 ===", Sum(csneed.ToArray()));
+            ShowUp(csneed.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 資工選修 共 {0} 學分 ===", Sum(cschoose.ToArray()));
+            ShowUp(cschoose.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 其他 共 {0} 學分 ===", Sum(other.ToArray()));
+            ShowUp(other.ToArray());
+            Console.WriteLine();
         }
 
-        static HtmlNode[] GetCourse(HtmlNode[] input, int index)
+        static void ShowUp(Course[] courseArr)
         {
-            HtmlDocument htmlDoc = new HtmlDocument();
-            string temp = WebUtility.HtmlDecode(input[index].InnerHtml);
-            htmlDoc.LoadHtml(temp);
-            HtmlNode[] data = htmlDoc.DocumentNode.Descendants().Where(
-                                 x => (x.ParentNode.Name == "td" && x.Name == "font")).ToArray();
-            return data;
+            foreach (Course item in courseArr)
+            {
+                Console.WriteLine(item.ToString());
+            }            
+        }
+
+        static int Sum(Course[] courseArr)
+        {
+            int sum = 0;
+            foreach (Course item in courseArr)
+            {
+                char[] grade = item.Grade.ToCharArray();
+                if (grade[0] < 'D')
+                    sum += item.Credit;
+            }
+            return sum;
         }
     }
 }

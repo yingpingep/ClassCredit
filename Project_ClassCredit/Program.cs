@@ -89,12 +89,14 @@ namespace Project_ClassCredit
                     else
                         cschoose.Add(course);
                 }
+                else if (data[1].Contains("EC"))
+                    cschoose.Add(course);
                 else
                     other.Add(course);
             }
             sr.Close();
 
-            Console.WriteLine("=== 通識 共 {0} 學分 ===", Sum(general.ToArray()));
+            Console.WriteLine("=== 共同必修 共 {0} 學分 ===", Sum(general.ToArray()));
             ShowUp(general.ToArray());
             Console.WriteLine();
 

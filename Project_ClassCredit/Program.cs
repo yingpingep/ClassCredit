@@ -21,7 +21,9 @@ namespace Project_ClassCredit
             //       2. Using HtmlAgilityPack to parse data.
             //       3. Output.
 
-            string storePath = @"C:\Users\yinnping\Downloads\course.txt";
+            // string storePath = @"C:\Users\yinnping\Downloads\course.txt";
+            Console.WriteLine("Plase enter a file path that can store your course information (*.txt): ");
+            string storePath = Console.ReadLine();
             string filePath = string.Empty;
 
             if (args.Length != 0)
@@ -64,6 +66,9 @@ namespace Project_ClassCredit
 
             sr = new StreamReader(File.OpenRead(storePath));
             List<Course> general = new List<Course>();
+            List<Course> enneed = new List<Course>();
+            List<Course> chneed = new List<Course>();
+            List<Course> spneed = new List<Course>();
             List<Course> csneed = new List<Course>();
             List<Course> cschoose = new List<Course>();
             List<Course> other = new List<Course>();
@@ -80,7 +85,13 @@ namespace Project_ClassCredit
                 course.Grade = data[4];
 
                 char[] code = data[1].ToCharArray();
-                if (data[1].Contains("GE") || data[1].Contains("SA") || data[1].Contains("CC") || data[1].Contains("FE") || code[2] == 'G')
+                if (data[1].Contains("CC12"))
+                    chneed.Add(course);
+                else if (data[1].Contains("CC10") || data[1].Contains("FE"))
+                    enneed.Add(course);
+                else if (data[1].Contains("CC") && code[3] == '5')
+                    spneed.Add(course);
+                else if (data[1].Contains("GE") || code[2] == 'G')
                     general.Add(course);
                 else if (data[1].Contains("CS"))
                 {
@@ -96,8 +107,20 @@ namespace Project_ClassCredit
             }
             sr.Close();
 
-            Console.WriteLine("=== 共同必修 共 {0} 學分 ===", Sum(general.ToArray()));
+            Console.WriteLine("=== 通識必修 共 {0} 學分 ===", Sum(general.ToArray()));
             ShowUp(general.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 英文必修 共 {0} 學分 ===", Sum(enneed.ToArray()));
+            ShowUp(enneed.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 文學必修 共 {0} 學分 ===", Sum(chneed.ToArray()));
+            ShowUp(chneed.ToArray());
+            Console.WriteLine();
+
+            Console.WriteLine("=== 體育必修 共 {0} 學分 ===", Sum(spneed.ToArray()));
+            ShowUp(spneed.ToArray());
             Console.WriteLine();
 
             Console.WriteLine("=== 資工必修 共 {0} 學分 ===", Sum(csneed.ToArray()));

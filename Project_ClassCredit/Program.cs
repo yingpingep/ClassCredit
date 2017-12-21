@@ -134,6 +134,8 @@ namespace Project_ClassCredit
             Console.WriteLine("=== 其他 共 {0} 學分 ===", Sum(other.ToArray()));
             ShowUp(other.ToArray());
             Console.WriteLine();
+
+            Console.ReadLine();
         }
 
         static void ShowUp(Course[] courseArr)

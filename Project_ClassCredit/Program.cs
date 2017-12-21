@@ -22,7 +22,7 @@ namespace Project_ClassCredit
             //       3. Output.
 
             // string storePath = @"C:\Users\yinnping\Downloads\course.txt";
-            Console.WriteLine("Plase enter a file path that can store your course information (*.txt): ");
+            Console.Write("Plase enter a file path that can store your course information (*.txt): ");
             string storePath = Console.ReadLine();
             string filePath = string.Empty;
 
@@ -91,7 +91,7 @@ namespace Project_ClassCredit
                     enneed.Add(course);
                 else if (data[1].Contains("CC") && code[3] == '5')
                     spneed.Add(course);
-                else if (data[1].Contains("GE") || code[2] == 'G')
+                else if (data[1].Contains("GE") || data[1].Contains("SA") || code[2] == 'G')
                     general.Add(course);
                 else if (data[1].Contains("CS"))
                 {

@@ -21,18 +21,18 @@ namespace Project_ClassCredit
             //       2. Using HtmlAgilityPack to parse data.
             //       3. Output.
 
-            // string storePath = @"C:\Users\yinnping\Downloads\course.txt";
+            string storePath = @"C:\Users\yinnping\Downloads\course.txt";
             Console.Write("Plase enter a file path that can store your course information (*.txt): ");
-            string storePath = Console.ReadLine();
+            // string storePath = Console.ReadLine();
             string filePath = string.Empty;
 
-            if (args.Length != 0)
-                filePath = args[0];
-            else
-            {
-                Console.Write("Please enter the file path (*.html): ");
-                filePath = Console.ReadLine();
-            }
+            //if (args.Length != 0)
+            //    filePath = args[0];
+            //else
+            //{
+            Console.Write("Please enter the file path (*.html): ");
+            filePath = Console.ReadLine();
+            //}
 
             // File open.
             StreamReader sr = new StreamReader(filePath);
@@ -72,6 +72,7 @@ namespace Project_ClassCredit
             List<Course> csneed = new List<Course>();
             List<Course> cschoose = new List<Course>();
             List<Course> other = new List<Course>();
+            List<Course> all = new List<Course>();
             
             char[] splitChar = { '\t' };
             while (!sr.EndOfStream)
@@ -134,6 +135,16 @@ namespace Project_ClassCredit
             Console.WriteLine("=== 其他 共 {0} 學分 ===", Sum(other.ToArray()));
             ShowUp(other.ToArray());
             Console.WriteLine();
+
+            all.AddRange(general);
+            all.AddRange(enneed);
+            all.AddRange(chneed);
+            all.AddRange(spneed);
+            all.AddRange(csneed);
+            all.AddRange(cschoose);
+            all.AddRange(other);
+
+            Console.WriteLine(Sum(all.ToArray()));
 
             Console.ReadLine();
         }
